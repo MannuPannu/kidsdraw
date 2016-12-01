@@ -23,14 +23,10 @@ var isPaletteOpen = false;
 function preload() {
 }
 
-function update() {
-    if(game.input.pointer1.isDown) {
-        var p = game.input.pointer1;
-        paintCircle(p.x, p.y);
-    }
+function render() {
 }
 
-function render() {
+function update() {
 }
 
 function create() {
@@ -128,10 +124,15 @@ function paint(pointer, x, y) {
     {
         var pointerOverAnyButton = false;
         paletteButtons.forEach(function(button) {
-            if(button.input.pointerOver()){
+
+            debugger;
+            if(button.getBounds().contains(pointer.x, pointer.y)){
                pointerOverAnyButton = true;
             }
-        });
+            // if(button.input.pointerOver()){
+            //    pointerOverAnyButton = true;
+            // }
+        }, this);
 
         if(currentColorSprite.input.pointerOver())
         {
