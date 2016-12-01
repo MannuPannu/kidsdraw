@@ -5,16 +5,20 @@ var game = new Phaser.Game(window.innerWidth - 15, window.innerHeight- 50, Phase
 var bmd;
 var bmd2;
 
-var availableColors = [{hex: 0xff0000, rgba: 'rgba(255,0,0,0.2)'},
-                       {hex: 0x00ff00, rgba: 'rgba(0,255,0,0.2)'},
-                       {hex: 0xff00ff, rgba: 'rgba(255,0,255,0.2)'},
-                       {hex: 0x0000ff, rgba: 'rgba(0,0,255,0.2)'},
-                       {hex: 0xffff00, rgba: 'rgba(255,255,0,0.2)'}];
+var colorAlphaDefault = 0.4;
+
+var availableColors = [{hex: 0xff0000, rgba: 'rgba(255,0,0,'+ colorAlphaDefault +')'},
+                       {hex: 0x00ff00, rgba: 'rgba(0,255,0,'+ colorAlphaDefault +')'},
+                       {hex: 0xff00ff, rgba: 'rgba(255,0,255,'+ colorAlphaDefault +')'},
+                       {hex: 0x0000ff, rgba: 'rgba(0,0,255,'+ colorAlphaDefault +')'},
+                       {hex: 0xffff00, rgba: 'rgba(255,255,0,'+ colorAlphaDefault +')'}];
 
 var currentColorIndex = 2;
 var currentColorSprite;
 
 var paletteButtons;
+
+var isPaletteOpen = false;
 
 function preload() {
 }
@@ -40,6 +44,9 @@ function create() {
     game.input.addMoveCallback(paint, this);
 
     drawPalette();
+
+    // //Animate the paletteButtons
+    closePalette();
 }
 
 function drawPalette() {
@@ -53,7 +60,7 @@ function drawPalette() {
         graphics.drawRect(2, (60* i + 60), 50, 50);
         graphics.endFill();
 
-        var button = game.add.sprite(2, (60*i + 60), graphics.generateTexture());
+        var button = game.add.sprite(2, 0, graphics.generateTexture());
         graphics.destroy();
         button.colorId = i;
         button.inputEnabled = true;
@@ -66,6 +73,29 @@ function drawPalette() {
     drawCurrentColorSprite(); 
 }
 
+function openPalette() {
+    for(var i = 0; i < paletteButtons.children.length; i++) {
+        game.add.tween(paletteButtons.children[i]).to( { y: (i * 60) + 60 }, 500, Phaser.Easing.Quadratic.Out, true);
+    }
+    isPaletteOpen = true;
+}
+
+function closePalette() {
+    for(var i = 0; i < paletteButtons.children.length; i++) {
+        game.add.tween(paletteButtons.children[i]).to( { y: 0}, 500, Phaser.Easing.Quadratic.Out, true);
+    }
+    isPaletteOpen = false;
+}
+
+function togglePalette() {
+    if(isPaletteOpen){
+        closePalette();
+    }
+    else {
+        openPalette();
+    }
+}
+
 function drawCurrentColorSprite() {
     //Draw the current color sprite
     var graphics = game.add.graphics(0, 0);
@@ -76,6 +106,10 @@ function drawCurrentColorSprite() {
     graphics.endFill();
 
     currentColorSprite = game.add.sprite(0, 0, graphics.generateTexture());
+
+    currentColorSprite.inputEnabled = true;
+    currentColorSprite.events.onInputDown.add(togglePalette, this);
+
     graphics.destroy();
 }
 
@@ -85,6 +119,7 @@ function chooseColor(button) {
 
     currentColorIndex = button.colorId;
     drawCurrentColorSprite();
+    closePalette();
 }
 
 function paint(pointer, x, y) {
@@ -97,6 +132,11 @@ function paint(pointer, x, y) {
                pointerOverAnyButton = true;
             }
         });
+
+        if(currentColorSprite.input.pointerOver())
+        {
+            pointerOverAnyButton = true;
+        }
 
         if(!pointerOverAnyButton){
             bmd.draw(bmd2, x - 16, y - 16);
