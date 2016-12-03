@@ -125,13 +125,9 @@ function paint(pointer, x, y) {
         var pointerOverAnyButton = false;
         paletteButtons.forEach(function(button) {
 
-            debugger;
             if(button.getBounds().contains(pointer.x, pointer.y)){
                pointerOverAnyButton = true;
             }
-            // if(button.input.pointerOver()){
-            //    pointerOverAnyButton = true;
-            // }
         }, this);
 
         if(currentColorSprite.input.pointerOver())
