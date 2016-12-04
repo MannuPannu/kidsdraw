@@ -33,6 +33,9 @@ function update() {
 }
 
 function create() {
+    game.input.addPointer();
+    game.input.addPointer();
+
     bmd = game.make.bitmapData(window.innerWidth, window.innerHeight);
     bmd.addToWorld();
 
